@@ -1,0 +1,17 @@
+User:
+-fullname
+-email
+-password
+-phone
+-address
+-picture
+
+Post
+-title
+-userId
+-description
+-picture
+
+Bookmark
+-userId
+-postId
