@@ -1,19 +1,9 @@
 const multer = require("multer");
 
-exports.uploadFile = (image, attachment, picture) => {
+exports.uploadFile = (picture) => {
   const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-      switch (file.fieldname) {
-        case "image":
-          cb(null, "uploads/products"); //Lokasi penyimpanan file
-          break;
-        case "attachment":
-          cb(null, "uploads/transaction"); //Lokasi penyimpanan file
-          break;
-        case "picture":
-          cb(null, "uploads/picture"); //Lokasi penyimpanan file
-          break;
-      }
+      cb(null, "uploads/"); //Lokasi penyimpanan file
     },
     filename: function (req, file, cb) {
       cb(null, Date.now() + "-" + file.originalname.replace(/\s/g, ""));
@@ -48,14 +38,6 @@ exports.uploadFile = (image, attachment, picture) => {
       fileSize: maxSize,
     },
   }).fields([
-    {
-      name: image,
-      maxCount: 1,
-    },
-    {
-      name: attachment,
-      maxCount: 1,
-    },
     {
       name: picture,
       maxCount: 1,
