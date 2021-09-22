@@ -12,18 +12,13 @@ exports.uploadFile = (picture) => {
 
   // Function untuk filter file berdasarkan type
   const fileFilter = function (req, file, cb) {
-    if (
-      file.fieldname === image &&
-      file.fieldname === attachment &&
-      file.fieldname === picture
-    ) {
-      if (!file.originalname.match(/\.(jpg|JPG|jpeg|JPEG|png|PNG|git|GIF)$/)) {
-        req.fileValidationError = {
-          message: "Only image files are allowed!",
-        };
-        return cb(new Error("Only image files are allowed!"), false);
-      }
+    if (!file.originalname.match(/\.(jpg|JPG|jpeg|JPEG|png|PNG|git|GIF)$/)) {
+      req.fileValidationError = {
+        message: "Only image files are allowed!",
+      };
+      return cb(new Error("Only image files are allowed!"), false);
     }
+
     cb(null, true);
   };
 
