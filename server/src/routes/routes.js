@@ -24,6 +24,7 @@ const {
   getBookmarks,
   getBookmarkByUserId,
   deleteBookmark,
+  checkBookmarkedPost,
 } = require("../controller/bookmark");
 
 // Auth and Users
@@ -44,10 +45,11 @@ route.patch("/post/:id", auth, updatePost);
 route.delete("/post/:id", auth, deletePost);
 
 // Bookmark
-route.post("/bookmark", auth, addBookmark);
-route.get("/bookmark/:id", getBookmarkByPostId);
+route.post("/bookmark/:postId", auth, addBookmark);
+// route.get("/bookmark/:id", getBookmarkByPostId);
+route.get("/bookmark/:id", auth, checkBookmarkedPost);
 route.get("/bookmarks", getBookmarks);
-route.get("/profile/bookmarks", getBookmarkByUserId);
-route.delete("/bookmark/:id", deleteBookmark);
+route.get("/profile/bookmarks", auth, getBookmarkByUserId);
+route.delete("/bookmark/:id", auth, deleteBookmark);
 
 module.exports = route;

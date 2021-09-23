@@ -1,0 +1,10 @@
+.jumbotron {
+  height: 35rem;
+  width: 100%;
+  background: url("../../assets/Phuket\ .svg");
+  background-size: cover;
+  background-color: aliceblue;
+}
+.btnContainer {
+  width: 10rem;
+}

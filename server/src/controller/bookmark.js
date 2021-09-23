@@ -1,35 +1,29 @@
 const { Bookmark, User, Post } = require("../../models");
+const { Op } = require("sequelize");
 
 exports.addBookmark = async (req, res) => {
   try {
-    const { body } = req;
+    const isExist = await Bookmark.findOne({
+      where: { userId: req.idUser, postId: req.params.postId },
+    });
+
+    if (isExist) {
+      return res.status(400).send({
+        status: 400,
+        message: "Post Has Been Bookmarked",
+      });
+    }
+
     const newBody = {
-      ...body,
+      postId: req.params.postId,
       userId: req.idUser,
     };
     const data = await Bookmark.create(newBody);
-    const bookmarkAdded = await Bookmark.findOne({
-      where: { id: data.id },
-      include: [
-        {
-          model: User,
-          as: "User",
-          attributes: ["id", "fullName"],
-        },
-        {
-          model: Post,
-          as: "Journey",
-          attributes: {
-            exclude: ["updatedAt", "createdAt", "userId"],
-          },
-        },
-      ],
-    });
 
     res.status(200).send({
       status: 200,
       message: "Success Added New Bookmark",
-      data: bookmarkAdded,
+      data: data,
     });
   } catch (error) {
     console.log(error);
@@ -62,7 +56,7 @@ exports.getBookmarks = async (req, res) => {
 
     res.status(200).send({
       status: 200,
-      message: "Success Added New Bookmark",
+      message: "Success get all Bookmark",
       data: bookmark,
     });
   } catch (error) {
@@ -80,33 +74,26 @@ exports.getBookmarkByUserId = async (req, res) => {
       where: {
         userId: req.idUser,
       },
-      include: [
-        {
-          model: User,
-          as: "User",
-          attributes: ["id", "fullName"],
+      include: {
+        model: Post,
+        as: "Journey",
+        attributes: {
+          exclude: ["createdAt", "updatedAt", "userId"],
         },
-        {
-          model: Post,
-          as: "Journey",
-          attributes: {
-            exclude: ["createdAt", "updatedAt", "userId"],
-          },
-        },
-      ],
+      },
       attributes: ["id"],
     });
 
     res.status(200).send({
       status: 200,
-      message: "Success Added New Bookmark",
+      message: "Success get Bookmark by user id",
       data: bookmark,
     });
   } catch (error) {
     console.log(error);
     res.status(500).send({
       status: 500,
-      message: "Server Error, Create New Bookmark Failed",
+      message: "Server Error, get Bookmark Failed",
     });
   }
 };
@@ -136,7 +123,39 @@ exports.getBookmarkByPostId = async (req, res) => {
 
     res.status(200).send({
       status: 200,
-      message: "Success Added New Bookmark",
+      message: "Success get Bookmark by post id",
+      data: bookmark,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      status: 500,
+      message: "Server Error, Create New Bookmark Failed",
+    });
+  }
+};
+
+exports.checkBookmarkedPost = async (req, res) => {
+  try {
+    const bookmark = await Bookmark.findOne({
+      where: {
+        postId: req.params.id,
+        userId: req.idUser,
+      },
+      include: {
+        model: Post,
+        as: "Journey",
+        attributes: {
+          exclude: ["createdAt", "updatedAt", "userId"],
+        },
+      },
+
+      attributes: ["id"],
+    });
+
+    res.status(200).send({
+      status: 200,
+      message: "Success get Bookmark by post id",
       data: bookmark,
     });
   } catch (error) {
@@ -151,7 +170,10 @@ exports.getBookmarkByPostId = async (req, res) => {
 exports.deleteBookmark = async (req, res) => {
   try {
     const data = await Bookmark.findOne({
-      where: { id: req.params.id },
+      where: {
+        postId: req.params.id,
+        userId: req.idUser,
+      },
     });
 
     if (!data) {
@@ -162,8 +184,11 @@ exports.deleteBookmark = async (req, res) => {
       return;
     }
 
-    await Post.destroy({
-      where: { id: req.params.id },
+    await Bookmark.destroy({
+      where: {
+        postId: req.params.id,
+        userId: req.idUser,
+      },
     });
     res.status(200).send({
       status: 200,

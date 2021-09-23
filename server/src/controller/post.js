@@ -4,6 +4,7 @@ const { Op } = require("sequelize");
 exports.addPost = async (req, res) => {
   try {
     const { body, idUser } = req;
+    console.log(body);
     const data = {
       ...body,
       userId: idUser,
@@ -36,6 +37,7 @@ exports.getPosts = async (req, res) => {
         as: "User",
         attributes: ["id", "fullName"],
       },
+      order: [["createdAt", "DESC"]],
     });
 
     res.status(200).send({
@@ -84,7 +86,7 @@ exports.getPost = async (req, res) => {
 
 exports.getPostByUserLogin = async (req, res) => {
   try {
-    const postsData = await Post.findOne({
+    const postsData = await Post.findAll({
       where: {
         userId: req.idUser,
       },

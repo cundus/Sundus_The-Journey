@@ -81,13 +81,6 @@ exports.getLoggedinUser = async (req, res) => {
       attributes: {
         exclude: ["createdAt", "updatedAt", "password"],
       },
-      include: {
-        model: Post,
-        as: "Journey",
-        attributes: {
-          exclude: ["updatedAt"],
-        },
-      },
     });
     if (!dataUser) {
       return res.status(404).send({

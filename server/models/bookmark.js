@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
         },
       });
       Bookmark.belongsTo(models.Post, {
-        as: "Bookmarked",
+        as: "Journey",
         foreignKey: {
           name: "PostId",
         },
