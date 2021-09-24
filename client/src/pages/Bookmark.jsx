@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Col, Row } from "react-bootstrap";
 import CardList from "../components/cardlist/CardList";
 import Header from "../components/navbar/Header";
 import { API } from "../config/api";
+import { AppContext } from "../context/AppContext";
 
 const Bookmark = () => {
+  const { state } = useContext(AppContext);
   const [post, setPost] = useState([]);
   const [loading, setLoading] = useState(false);
   const path = "http://localhost:4000/uploads/";
@@ -23,7 +25,7 @@ const Bookmark = () => {
 
   useEffect(() => {
     getData();
-  }, []);
+  }, [state.update]);
 
   // if (loading) return;
 

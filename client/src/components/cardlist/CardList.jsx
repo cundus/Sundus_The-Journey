@@ -76,7 +76,7 @@ const CardList = ({ item }) => {
     if (state.isLogin) {
       getBookmarkByPost();
     }
-  }, [update]);
+  }, [state.update]);
 
   const checkboxHandler = () => {
     status ? deleteBookmark() : addToBookmark();

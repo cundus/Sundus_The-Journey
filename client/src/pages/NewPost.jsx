@@ -1,15 +1,25 @@
-import Button from "@restart/ui/esm/Button";
 import React, { useState } from "react";
-import { Form } from "react-bootstrap";
 import { useHistory } from "react-router";
 import Header from "../components/navbar/Header";
 import { API } from "../config/api";
+
+import { EditorState, convertToRaw } from "draft-js";
+import { Editor } from "react-draft-wysiwyg";
+import { stateToHtml } from "draft-js-export-html";
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import { Box, Flex, Heading, Stack } from "@chakra-ui/layout";
+import { FormControl, FormLabel } from "@chakra-ui/form-control";
+import { Input, InputGroup, InputLeftElement } from "@chakra-ui/input";
+import { Button } from "@chakra-ui/button";
+import { AttachmentIcon } from "@chakra-ui/icons";
 
 const NewPost = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [photo, setPhoto] = useState(null);
   const history = useHistory();
+
+  console.log();
 
   const handleSubmit = async (e) => {
     try {
@@ -35,67 +45,89 @@ const NewPost = () => {
   return (
     <>
       <Header />
-      <div>
-        <h1>New Journey</h1>
-        <div className="">
-          <Form onSubmit={handleSubmit}>
-            <Form.Group className="mb-4" controlId="ControlInput1">
-              <Form.Control
-                type="text"
-                placeholder="Name Product"
-                name="title"
-                onChange={(e) => setTitle(e.target.value)}
-                className="form-dominant color-dominant"
-                required
-              />
-            </Form.Group>
+      <Box px={30} py={30}>
+        <Heading as="h1" size="xl" isTruncated>
+          New Journey
+        </Heading>
+        <Box px={50} py={30} f>
+          <form onSubmit={handleSubmit}>
+            <Stack spacing={5}>
+              <FormControl id="first-name" isRequired>
+                <FormLabel fontWeight="bold">Title</FormLabel>
+                <Input
+                  type="text"
+                  name="title"
+                  // variant="filled"
+                  color="white"
+                  onChange={(e) => setTitle(e.target.value)}
+                  style={{
+                    boxShadow: "none",
+                    border: "1px solid grey",
+                    backgroundColor: "white",
+                    color: "black",
+                  }}
+                />
+              </FormControl>
 
-            <Form.Group className="mb-4" controlId="ControlInput3">
-              <Form.Control
-                required
-                as="textarea"
-                placeholder="Description"
-                name="description"
-                onChange={(e) => setDescription(e.target.value)}
-                className="form-dominant color-dominant"
-              />
-            </Form.Group>
+              <Flex>
+                <FormControl id="upload" w={180}>
+                  <FormLabel
+                    border="gray 1px solid"
+                    bg="white"
+                    px={5}
+                    py={2}
+                    borderRadius={5}
+                    _hover={{
+                      cursor: "pointer",
+                      backgroundColor: "gray",
+                    }}
+                  >
+                    <AttachmentIcon color="gray.600" me="5" />
+                    Add Image
+                  </FormLabel>
+                  <Input
+                    type="file"
+                    placeholder="Phone number"
+                    hidden
+                    name="photo"
+                    onChange={(e) => {
+                      setPhoto(e.target.files[0]);
+                    }}
+                  />
+                </FormControl>
+              </Flex>
 
-            <div className="form-dominant color-dominant uploadForm mb-5">
-              <label
-                htmlFor="upload"
-                className="d-flex justify-content-between"
-              >
-                {photo ? photo.name : "Journey Picture"}{" "}
-                {/* <img src={UploadIcon} alt="upload" width="15px" /> */}
-              </label>
-              <input
-                required
-                type="file"
-                hidden
-                id="upload"
-                name="photo"
-                onChange={(e) => {
-                  setPhoto(e.target.files[0]);
-                  // setImage(e.target.files[0].name);
+              <Editor
+                editorState={description}
+                wrapperClassName="wrapper-class"
+                editorClassName="editor-class"
+                toolbarClassName="toolbar-class"
+                wrapperStyle={{
+                  outline: "1px solid gray",
+                  marginBottom: "20px",
+                  borderRadius: "5px",
+                  backgroundColor: "white",
                 }}
+                editorStyle={{ height: "300px", padding: "10px" }}
+                onEditorStateChange={(editorState) =>
+                  setDescription(editorState)
+                }
               />
-            </div>
 
-            <Button
-              variant="primary"
-              style={{
-                backgroundColor: "blue",
-                color: "white",
-                paddingInline: "20px",
-              }}
-              type="submit"
-            >
-              Post
-            </Button>
-          </Form>
-        </div>
-      </div>
+              <Flex justify="end">
+                <Button
+                  variant="solid"
+                  colorScheme="twitter"
+                  type="submit"
+                  px={10}
+                >
+                  Post
+                </Button>
+              </Flex>
+            </Stack>
+          </form>
+        </Box>
+      </Box>
     </>
   );
 };

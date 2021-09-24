@@ -1,6 +1,6 @@
 //import Lib
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import { ChakraProvider } from "@chakra-ui/react";
+import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 // import assets & css
@@ -15,6 +15,20 @@ import { API, setAuthToken } from "./config/api";
 import Profile from "./pages/Profile";
 import NewPost from "./pages/NewPost";
 import Bookmark from "./pages/Bookmark";
+
+// Theming with Chakra
+
+const colors = {
+  transparent: "transparent",
+  black: "#000",
+  white: "#fff",
+  gray: {
+    50: "#F7FAFC",
+    100: "#EDF2F7",
+  },
+};
+
+const theme = extendTheme({ colors });
 
 function App({ component }) {
   const { state, dispatch } = useContext(AppContext);
@@ -38,11 +52,12 @@ function App({ component }) {
     }
   };
   useEffect(() => {
+    document.body.style.backgroundColor = "#E5E5E5";
     checkUser();
-  }, []);
+  }, [state.update]);
 
   return (
-    <ChakraProvider>
+    <ChakraProvider theme={theme}>
       <Router>
         <Switch>
           <Route exact path="/" component={Home} />

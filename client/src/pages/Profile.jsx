@@ -33,7 +33,7 @@ const Profile = () => {
   return (
     <>
       <Header />
-      <div className="mt-2">
+      <div className="mt-5">
         <div className="" style={{ textAlign: "center" }}>
           <img
             src={profile?.picture ? path + profile.picture : PhotoPlaceholder}

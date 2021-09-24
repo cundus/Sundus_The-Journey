@@ -2,6 +2,18 @@
   cursor: pointer;
 }
 
-/* .cardPost::after{
-  content: url();
-} */
+.leaf-img {
+  position: absolute;
+  position: absolute;
+  right: 0;
+  top: 0;
+  border-radius: 0 6px 0 0;
+}
+
+.atlas-img {
+  position: absolute;
+  position: absolute;
+  left: 0;
+  top: 0;
+  border-radius: 7px 0 0 0;
+}

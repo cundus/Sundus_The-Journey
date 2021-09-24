@@ -1,8 +1,24 @@
 import { useState } from "react";
-import { Alert, Button, Form, Modal } from "react-bootstrap";
+import {
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
+} from "@chakra-ui/modal";
 import { API } from "../../config/api";
+import { Button } from "@chakra-ui/button";
+import { FormControl, FormLabel } from "@chakra-ui/form-control";
+import { Input } from "@chakra-ui/input";
+import { Text } from "@chakra-ui/layout";
 
-const RegisterModal = ({ show, hide, showLogin }) => {
+import Atlas from "../../assets/atlas 1.svg";
+import Leaf from "../../assets/leaf 1.svg";
+import { Textarea } from "@chakra-ui/textarea";
+import ErrorMessage from "../atom/ErrorMessage";
+
+const RegisterModal = (props) => {
+  const { dispatch, isOpen, onClose } = props;
   const [data, setData] = useState({
     fullName: "",
     email: "",
@@ -52,73 +68,97 @@ const RegisterModal = ({ show, hide, showLogin }) => {
 
   return (
     <div>
-      <Modal show={show} onHide={hide} centered>
-        <Form className="p-5" onSubmit={handleSubmit}>
-          <h1 className="color-dominant mb-3">Register</h1>
-          {isError && <Alert variant="danger">{message}</Alert>}
-          {messageOk && <Alert variant="success">{messageOk}</Alert>}
-
-          <Form.Group className="mb-3" controlId="formFullName">
-            <Form.Control
-              type="text"
-              placeholder="Full Name"
-              className="form-dominant"
-              onChange={handleChange}
-              name="fullName"
-              required
-            />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Control
-              type="email"
-              placeholder="Enter email"
-              className="form-dominant"
-              required
-              name="email"
-              onChange={handleChange}
-            />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="formPassword">
-            <Form.Control
-              type="password"
-              placeholder="Password"
-              className="form-dominant"
-              onChange={handleChange}
-              name="password"
-              required
-            />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="formPhone">
-            <Form.Control
-              type="text"
-              placeholder="Phone"
-              className="form-dominant"
-              onChange={handleChange}
-              name="phone"
-              required
-            />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="formFullName">
-            <Form.Control
-              as="textarea"
-              placeholder="Address"
-              className="form-dominant"
-              onChange={handleChange}
-              name="address"
-              required
-            />
-          </Form.Group>
-
-          <Button className="button-dominant full-width" type="submit">
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        size="sm"
+        isCentered
+        scrollBehavior="inside"
+      >
+        <ModalOverlay />
+        <ModalContent h={500}>
+          <ModalHeader
+            textAlign="center"
+            my={5}
+            fontSize={26}
+            className="login-modal"
+          >
+            <img src={Atlas} alt="" className="atlas-img" />
+            <img src={Leaf} alt="" className="leaf-img" />
             Register
-          </Button>
-          <p className="text-center mt-3">
-            Already have an account ? Click{" "}
-            <span className="fw-bold cursor-pointer" onClick={showLogin}>
-              Here
-            </span>
-          </p>
-        </Form>
+          </ModalHeader>
+          <ModalBody>
+            <form className="px-4" onSubmit={handleSubmit}>
+              {isError && <ErrorMessage status="error" message={message} />}
+              {messageOk && (
+                <ErrorMessage status="success" message={messageOk} />
+              )}
+
+              <FormControl id="fullname" isRequired my={5}>
+                <FormLabel fontWeight="bold">Full Name</FormLabel>
+                <Input
+                  type="text"
+                  onChange={handleChange}
+                  name="fullName"
+                  required
+                  variant="filled"
+                />
+              </FormControl>
+              <FormControl id="email" isRequired my={5}>
+                <FormLabel fontWeight="bold">Email</FormLabel>
+                <Input
+                  type="email"
+                  variant="filled"
+                  onChange={handleChange}
+                  required
+                  name="email"
+                />
+              </FormControl>
+              <FormControl id="password" my={5} isRequired>
+                <FormLabel fontWeight="bold">Password</FormLabel>
+                <Input
+                  type="password"
+                  variant="filled"
+                  required
+                  name="password"
+                  onChange={handleChange}
+                />
+              </FormControl>
+              <FormControl id="phone" isRequired my={5}>
+                <FormLabel fontWeight="bold">Phone</FormLabel>
+                <Input
+                  type="text"
+                  onChange={handleChange}
+                  name="phone"
+                  required
+                  variant="filled"
+                />
+              </FormControl>
+              <FormControl id="address" isRequired my={5}>
+                <FormLabel fontWeight="bold">Address</FormLabel>
+                <Textarea
+                  onChange={handleChange}
+                  name="address"
+                  required
+                  variant="filled"
+                />
+              </FormControl>
+              <Button
+                colorScheme="blue"
+                mx="auto"
+                w="100%"
+                type="submit"
+                my={5}
+              >
+                Login
+              </Button>
+            </form>
+
+            <Text color="gray.500" textAlign="center" mb={5}>
+              Don't have an account? Klik <b>Here</b>
+            </Text>
+          </ModalBody>
+        </ModalContent>
       </Modal>
     </div>
   );

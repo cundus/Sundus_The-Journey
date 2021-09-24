@@ -46,7 +46,6 @@ route.delete("/post/:id", auth, deletePost);
 
 // Bookmark
 route.post("/bookmark/:postId", auth, addBookmark);
-// route.get("/bookmark/:id", getBookmarkByPostId);
 route.get("/bookmark/:id", auth, checkBookmarkedPost);
 route.get("/bookmarks", getBookmarks);
 route.get("/profile/bookmarks", auth, getBookmarkByUserId);

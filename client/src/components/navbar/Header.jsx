@@ -14,15 +14,9 @@ const Header = () => {
   //   console.log("ini State di Context ", state);
 
   return (
-    <div className="px-5">
+    <div className="px-5 shadow sticky-top">
       <Navbar collapseOnSelect>
         <Navbar.Brand href="#">
-          {/* <img
-              src={Logo}
-              alt="..."
-              width="70px"
-              onClick={() => history.push("/")}
-            /> */}
           <Logo onClick={() => history.push("/")} />
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />

@@ -1,11 +1,24 @@
+import { Button } from "@chakra-ui/button";
+import { FormControl, FormLabel } from "@chakra-ui/form-control";
+import { Input } from "@chakra-ui/input";
+import { Text } from "@chakra-ui/layout";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
+} from "@chakra-ui/modal";
+
 import React, { useState } from "react";
-import { Form, Button, Modal, Alert } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
 import { API, setAuthToken } from "../../config/api";
+import ErrorMessage from "../atom/ErrorMessage";
 
-// import { loginData } from "../../data/fakedata";
+import Atlas from "../../assets/atlas 1.svg";
+import Leaf from "../../assets/leaf 1.svg";
 
-const LoginModal = ({ show, hide, showRegister, dispatch }) => {
+const LoginModal = (props) => {
+  const { dispatch, isOpen, onClose } = props;
   const history = useHistory();
   const [isError, setIsError] = useState(false);
   const [message, setMessage] = useState("");
@@ -15,18 +28,16 @@ const LoginModal = ({ show, hide, showRegister, dispatch }) => {
   });
 
   const handleChange = (e) => {
+    setIsError(false);
     setData({
       ...data,
       [e.target.name]: e.target.value,
     });
   };
 
-  // console.log(data);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      setIsError(false);
       const config = {
         "Content-Type": "application/json",
       };
@@ -37,61 +48,71 @@ const LoginModal = ({ show, hide, showRegister, dispatch }) => {
       localStorage.setItem("token", res.data.data.token);
 
       const getProfile = await API.get("/profile");
-
       dispatch({
         type: "LOGIN",
         payload: { ...getProfile.data.data },
       });
-      localStorage.setItem("token", res.data.data.token);
-      hide();
+      dispatch({
+        type: "UPDATE",
+      });
+
       history.push("/");
     } catch (error) {
       const { response } = error;
-      console.log(response);
-      setIsError(true);
+      console.log({ error });
       setMessage(response.data.message);
+      setIsError(true);
     }
   };
 
   return (
     <div>
-      <Modal show={show} onHide={hide} centered>
-        <Form className="p-5" onSubmit={handleSubmit}>
-          <h1 className="color-dominant mb-3">Login</h1>
-          {isError && <Alert variant="danger">{message}</Alert>}
-
-          <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Control
-              type="email"
-              placeholder="Enter email"
-              className="form-dominant"
-              name="email"
-              onChange={handleChange}
-              required
-            />
-          </Form.Group>
-
-          <Form.Group className="mb-3" controlId="formBasicPassword">
-            <Form.Control
-              type="password"
-              placeholder="Password"
-              className="form-dominant"
-              required
-              name="password"
-              onChange={handleChange}
-            />
-          </Form.Group>
-
-          <Button className="button-dominant full-width" type="submit">
+      <Modal isOpen={isOpen} onClose={onClose} size="sm" isCentered>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader
+            textAlign="center"
+            my={5}
+            fontSize={24}
+            className="login-modal"
+          >
+            <img src={Atlas} alt="" className="atlas-img" />
+            <img src={Leaf} alt="" className="leaf-img" />
             Login
-          </Button>
-          <p className="text-center mt-3">
-            Don't have an account ? Click{" "}
-            <span className="fw-bold cursor-pointer" onClick={showRegister}>
-              Here
-            </span>
-          </p>
-        </Form>
+          </ModalHeader>
+          <form className="px-4" onSubmit={handleSubmit}>
+            {isError && <ErrorMessage status="error" message={message} />}
+            <FormControl id="email" isRequired>
+              <FormLabel fontWeight="bold">Email</FormLabel>
+              <Input
+                type="email"
+                variant="filled"
+                onChange={handleChange}
+                required
+                name="email"
+              />
+            </FormControl>
+
+            <FormControl id="password" my={5} isRequired>
+              <FormLabel fontWeight="bold">Password</FormLabel>
+              <Input
+                type="password"
+                variant="filled"
+                required
+                name="password"
+                onChange={handleChange}
+              />
+            </FormControl>
+
+            <Button colorScheme="blue" mx="auto" w="100%" type="submit" my={5}>
+              Login
+            </Button>
+          </form>
+
+          <Text color="gray.500" textAlign="center" mb={5}>
+            Don't have an account? Klik <b>Here</b>
+          </Text>
+        </ModalContent>
       </Modal>
     </div>
   );

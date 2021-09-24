@@ -1,36 +1,77 @@
 import React, { useContext } from "react";
 import "./Jumbotron.css";
-import { Box, Flex } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  Button,
+  Text,
+  Heading,
+  useDisclosure,
+} from "@chakra-ui/react";
 import Logo from "../atom/Logo";
-import { Button } from "react-bootstrap";
 import LoginModal from "../modal/LoginModal";
 
 import { AppContext } from "../../context/AppContext";
 import RegisterModal from "../modal/RegisterModal";
 
 export const Jumbotron = () => {
-  const [showLogin, setShowLogin] = React.useState(false);
-  const [showRegister, setShowRegister] = React.useState(false);
+  const {
+    isOpen: isLoginOpen,
+    onOpen: onLoginOpen,
+    onClose: onLoginClose,
+  } = useDisclosure();
+  const {
+    isOpen: isRegisterOpen,
+    onOpen: onRegisterOpen,
+    onClose: onRegisterClose,
+  } = useDisclosure();
 
   const { state, dispatch } = useContext(AppContext);
-
   return (
     <div className="jumbotron">
-      <div className="d-flex justify-content-between px-5 py-3">
+      <Box display="flex" justifyContent="space-between" px={10} py={5}>
         <Logo className="cursor-pointer" />
-        <div className="d-flex justify-content-evenly btnContainer">
-          <Button onClick={() => setShowLogin(true)}>Login</Button>
-          <Button onClick={() => setShowRegister(true)}>Register</Button>
-        </div>
-      </div>
+        <Flex width="60" justifyContent="space-around">
+          <Button
+            color="gray.50"
+            colorScheme="linkedin"
+            variant="outline"
+            onClick={onLoginOpen}
+            px={10}
+            me={3}
+          >
+            <Text color="white">Login</Text>
+          </Button>
+          <Button
+            variant="solid"
+            colorScheme="twitter"
+            onClick={onRegisterOpen}
+            px={10}
+          >
+            Register
+          </Button>
+        </Flex>
+      </Box>
+      <Box w="550px" mt={20} ms={10}>
+        <Heading as="h1" size="2xl" color="white">
+          The Journey
+        </Heading>
+        <Heading as="h1" size="2xl" color="white">
+          you never dreamed of.
+        </Heading>
+        <Text color="white" mt={5} fontSize="17">
+          We made a tool so you can easily keep & share your travel memories.
+          But there is a lot more
+        </Text>
+      </Box>
       <LoginModal
-        show={showLogin}
-        hide={() => setShowLogin(false)}
+        isOpen={isLoginOpen}
+        onClose={onLoginClose}
         dispatch={dispatch}
       />
       <RegisterModal
-        show={showRegister}
-        hide={() => setShowRegister(false)}
+        isOpen={isRegisterOpen}
+        onClose={onRegisterClose}
         dispatch={dispatch}
       />
     </div>
