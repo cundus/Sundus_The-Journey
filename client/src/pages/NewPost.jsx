@@ -3,10 +3,11 @@ import { useHistory } from "react-router";
 import Header from "../components/navbar/Header";
 import { API } from "../config/api";
 
-import { EditorState, convertToRaw } from "draft-js";
+import { EditorState, convertToRaw, stateToHtml } from "draft-js";
 import { Editor } from "react-draft-wysiwyg";
-import { stateToHtml } from "draft-js-export-html";
+import draftToHtml from "draftjs-to-html";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+
 import { Box, Flex, Heading, Stack } from "@chakra-ui/layout";
 import { FormControl, FormLabel } from "@chakra-ui/form-control";
 import { Input, InputGroup, InputLeftElement } from "@chakra-ui/input";
@@ -15,11 +16,14 @@ import { AttachmentIcon } from "@chakra-ui/icons";
 
 const NewPost = () => {
   const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  const [description, setDescription] = useState(EditorState.createEmpty());
   const [photo, setPhoto] = useState(null);
   const history = useHistory();
+  const rawContentState = draftToHtml(
+    convertToRaw(description.getCurrentContent())
+  );
 
-  console.log();
+  console.log(rawContentState);
 
   const handleSubmit = async (e) => {
     try {
@@ -27,7 +31,7 @@ const NewPost = () => {
 
       const data = new FormData();
       data.append("title", title);
-      data.append("description", description);
+      data.append("description", rawContentState);
       data.append("picture", photo);
 
       const config = {
@@ -45,7 +49,7 @@ const NewPost = () => {
   return (
     <>
       <Header />
-      <Box px={30} py={30}>
+      <Box px={30} mt={16}>
         <Heading as="h1" size="xl" isTruncated>
           New Journey
         </Heading>
@@ -57,7 +61,6 @@ const NewPost = () => {
                 <Input
                   type="text"
                   name="title"
-                  // variant="filled"
                   color="white"
                   onChange={(e) => setTitle(e.target.value)}
                   style={{

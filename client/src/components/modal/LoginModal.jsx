@@ -42,8 +42,6 @@ const LoginModal = (props) => {
         "Content-Type": "application/json",
       };
       const res = await API.post("/login", data, config);
-      // console.log("data Login", res.data.data);
-
       setAuthToken(res.data.data.token);
       localStorage.setItem("token", res.data.data.token);
 
@@ -51,6 +49,11 @@ const LoginModal = (props) => {
       dispatch({
         type: "LOGIN",
         payload: { ...getProfile.data.data },
+      });
+      const getBookmarks = await API.get("/profile/bookmarks");
+      dispatch({
+        type: "GET_BOOKMARK",
+        payload: getBookmarks.data.data,
       });
       dispatch({
         type: "UPDATE",

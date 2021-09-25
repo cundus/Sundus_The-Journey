@@ -5,23 +5,26 @@ import { API } from "../config/api";
 import CardList from "../components/cardlist/CardList";
 import { Col, Row } from "react-bootstrap";
 import Header from "../components/navbar/Header";
-import { Box } from "@chakra-ui/layout";
+import { Box, Center, Heading, SimpleGrid } from "@chakra-ui/layout";
 import { Input } from "@chakra-ui/input";
 import { Button } from "@chakra-ui/button";
 
 function Home() {
   const { state, dispatch } = useContext(AppContext);
-  const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [q, setQ] = useState("");
+
+  // async state
+  const [data, setData] = useState([]);
+  const [dataBookmark, setDataBookmark] = useState([]);
+
+  // Filter
   const [searchParam] = useState(["title"]);
-  const [filter, setFilter] = useState([]);
+  const [q, setQ] = useState("");
 
   const getPost = async () => {
     try {
       setIsLoading(true);
       const response = await API.get("/posts");
-      // console.log(response);
       setData(response.data.data);
       setIsLoading(false);
     } catch (error) {
@@ -34,10 +37,6 @@ function Home() {
     getPost();
   }, [state.update]);
 
-  // useEffect(() => {
-  //   getPost();
-  // });
-
   function search(items) {
     return items.filter((item) => {
       return searchParam.some((newItem) => {
@@ -48,19 +47,23 @@ function Home() {
     });
   }
 
-  if (isLoading) return <p>loading</p>;
+  //
+
+  // if (isLoading) return <p>loading</p>;
 
   return (
     <div>
       {!state.isLogin ? <Jumbotron /> : <Header />}
 
-      <Box className="" mt={10} px={20}>
-        <p className="fs-1">Journey</p>
+      <Box className="" mt={16} px={16}>
+        <Heading as="h1" size="xl" isTruncated>
+          Journey
+        </Heading>
 
         <Box
           className="search-box"
           display="flex"
-          w="5xl"
+          maxW="5xl"
           m="auto"
           mb={10}
           mt={6}
@@ -82,14 +85,28 @@ function Home() {
             Search
           </Button>
         </Box>
-
-        <Row>
-          {search(data).map((item) => (
-            <Col sm={3} key={item.id}>
-              <CardList item={item} />
-            </Col>
-          ))}
-        </Row>
+        <Center mt={20}>
+          <SimpleGrid
+            // minChildWidth="9rem"
+            columns={[1, 2, 4]}
+            spacingX="40px"
+            spacingY="40px"
+          >
+            {search(data).map((item) => {
+              let isBookmark = false;
+              state.bookmarks.length > 0
+                ? state.bookmarks.map((id) => {
+                    if (item.id !== id) {
+                      return isBookmark;
+                    } else if (item.id === id) {
+                      isBookmark = true;
+                    }
+                  })
+                : (isBookmark = false);
+              return <CardList item={item} isBookmark={isBookmark} />;
+            })}
+          </SimpleGrid>
+        </Center>
       </Box>
     </div>
   );

@@ -1,3 +1,4 @@
+import { Box, Center, Container, Heading, SimpleGrid } from "@chakra-ui/layout";
 import React, { useContext, useEffect, useState } from "react";
 import { Col, Row } from "react-bootstrap";
 import CardList from "../components/cardlist/CardList";
@@ -27,23 +28,26 @@ const Bookmark = () => {
     getData();
   }, [state.update]);
 
-  // if (loading) return;
+  if (loading) return <p>loading</p>;
 
   return (
     <div>
       <Header />
-      <div className="mt-2">
-        <h1 className="fs-1">Bookmark</h1>
-        <div>
-          <Row>
-            {post.map((item) => (
-              <Col key={item.id}>
+      <Container maxW="container.xl" mt={16}>
+        <Heading as="h1" size="xl" isTruncated>
+          Bookmark
+        </Heading>
+
+        <Box>
+          <Center mt={20}>
+            <SimpleGrid columns={4} spacingX="40px" spacingY="40px">
+              {post?.map((item) => (
                 <CardList item={item.Journey} />
-              </Col>
-            ))}
-          </Row>
-        </div>
-      </div>
+              ))}
+            </SimpleGrid>
+          </Center>
+        </Box>
+      </Container>
     </div>
   );
 };

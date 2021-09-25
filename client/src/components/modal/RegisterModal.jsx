@@ -88,7 +88,7 @@ const RegisterModal = (props) => {
             Register
           </ModalHeader>
           <ModalBody>
-            <form className="px-4" onSubmit={handleSubmit}>
+            <form className="px-2" onSubmit={handleSubmit}>
               {isError && <ErrorMessage status="error" message={message} />}
               {messageOk && (
                 <ErrorMessage status="success" message={messageOk} />

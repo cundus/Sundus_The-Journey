@@ -1,12 +1,13 @@
 // import { data, topping } from "../../data/fakedata";
 import { useHistory, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Col, Row } from "react-bootstrap";
-
+import moment from "moment";
 import { useContext } from "react";
 import { API } from "../config/api";
 import { AppContext } from "../context/AppContext";
 import Header from "../components/navbar/Header";
+import { Box, Container, Flex, Heading, Text } from "@chakra-ui/layout";
+import { Img } from "@chakra-ui/image";
 
 const DetailPost = () => {
   const { state, dispatch } = useContext(AppContext);
@@ -14,8 +15,12 @@ const DetailPost = () => {
   const [loading, setLoading] = useState(false);
   const { id } = useParams();
   const path = "http://localhost:4000/uploads/";
-
+  const created = moment(data.createdAt).format("D MMMM YYYY");
   //   console.log(data);
+
+  function createMarkup(e) {
+    return { __html: e };
+  }
 
   const getProductAndTopping = async () => {
     try {
@@ -40,19 +45,24 @@ const DetailPost = () => {
   return (
     <>
       <Header />
-      <div className="container">
-        <div className="">
-          <div className="d-flex justify-content-between">
-            <p>{data.title}</p>
-            <p>{data.User?.fullName}</p>
-          </div>
-          {data.createdAt}
-        </div>
-        <div className="image-detail">
-          <img src={path + data.picture} alt="..." />
-        </div>
-        <p>{data.description}</p>
-      </div>
+      <Container maxW="container.xl" mt={16}>
+        <Box mb={10}>
+          <Flex justify="space-between">
+            <Heading as="h1">{data.title}</Heading>
+            <Text fontSize="lg">{data.User?.fullName}</Text>
+          </Flex>
+          <Text color="twitter.600">{created}</Text>
+        </Box>
+        <Box mb={10}>
+          <Img
+            src={path + data?.picture}
+            alt="..."
+            borderRadius={8}
+            boxSize="100%"
+          />
+        </Box>
+        <div dangerouslySetInnerHTML={createMarkup(data.description)} />
+      </Container>
     </>
   );
 };

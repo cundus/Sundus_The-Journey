@@ -1,36 +1,42 @@
+import { Image } from "@chakra-ui/image";
+import { Box, Flex, Heading, Stack, Text, Circle } from "@chakra-ui/layout";
+import { Spinner } from "@chakra-ui/spinner";
 import { useContext, useEffect, useState } from "react";
-import { Card } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
 import { API } from "../../config/api";
 import { AppContext } from "../../context/AppContext";
-import { Checkbox } from "../atom/Checkbox";
 import LoginModal from "../modal/LoginModal";
+import moment from "moment";
+import Icon from "@chakra-ui/icon";
+import { IoBookmarkOutline, IoBookmark } from "react-icons/io5";
 
-const CardList = ({ item }) => {
+const CardList = ({ item, isBookmark }) => {
+  // console.log(item);
   const { state, dispatch } = useContext(AppContext);
+
   const history = useHistory();
   const path = "http://localhost:4000/uploads/";
-  const [showLogin, setShowLogin] = useState(false);
+  const created = moment(item.createdAt).format("D MMMM YYYY");
+  // console.log(created);
 
-  const [update, setUpdate] = useState(false);
-  const [data, setData] = useState({});
-  const [status, setStatus] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const toggle = () => setUpdate(!update);
   const id = item.id;
+  let desc =
+    item.description.replace(/(<([^>]+)>)/gi, "").substring(0, 230) + "...";
+
+  const title =
+    item.title.length > 30 ? item.title.substring(0, 30) + "..." : item.title;
 
   const addToBookmark = async () => {
     try {
-      setIsLoading(true);
-
       const response = await API.post(`/bookmark/${id}`);
-      toggle();
-      console.log("added", response);
+      console.log("added");
+      dispatch({
+        type: "ADD_BOOKMARK",
+        payload: id,
+      });
       dispatch({
         type: "UPDATE",
       });
-      setIsLoading(false);
     } catch (error) {
       console.log(error);
     }
@@ -38,105 +44,91 @@ const CardList = ({ item }) => {
 
   const deleteBookmark = async () => {
     try {
-      setIsLoading(true);
-
       const response = await API.delete(`/bookmark/${id}`);
-      toggle();
-      console.log("deleted", response);
+
+      console.log("deleted");
+      dispatch({
+        type: "DELETE_BOOKMARK",
+        payload: id,
+      });
       dispatch({
         type: "UPDATE",
       });
-      setIsLoading(false);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const getBookmarkByPost = async () => {
-    try {
-      setIsLoading(true);
-
-      const response = await API.get(`/bookmark/${id}`);
-      if (response.data.data) {
-        setStatus(true);
-      } else {
-        setStatus(false);
-      }
-      setIsLoading(false);
-    } catch (error) {
-      console.log({ error });
+  const checkboxHandler = (e) => {
+    e.preventDefault();
+    if (state.isLogin === true) {
+      isBookmark ? deleteBookmark() : addToBookmark();
+    } else {
+      return alert("login dulu bang");
     }
   };
 
-  useEffect(() => {
-    if (!state.isLogin) {
-      setStatus(false);
-    }
+  const handleDetail = (e) => {
+    e.preventDefault();
 
-    if (state.isLogin) {
-      getBookmarkByPost();
-    }
-  }, [state.update]);
-
-  const checkboxHandler = () => {
-    status ? deleteBookmark() : addToBookmark();
-  };
-
-  const handleDetail = () => {
     if (state.isLogin) {
       history.push(`post/${item.id}`);
     } else {
-      setShowLogin(true);
+      return alert("login dulu bang");
     }
   };
 
-  if (isLoading) return <p>Loading</p>;
-
   return (
-    <div>
-      <Card
-        className="cursor-pointer mb-5 cardPost"
-        style={{
-          width: "16rem",
-          borderRadius: "10px",
-          background: "#F6DADA",
-        }}
-        key={item.id}
-      >
+    <Box position="relative" key={item.id}>
+      <label className="label-bookmark">
+        <Circle size="26px" bg="white">
+          <Icon
+            as={isBookmark ? IoBookmark : IoBookmarkOutline}
+            color="messenger.300"
+            w={5}
+            h={5}
+          />
+        </Circle>
         <input
           type="checkbox"
           name="check"
           id="check"
-          checked={status}
-          onChange={checkboxHandler}
+          checked={isBookmark}
+          onChange={(e) => checkboxHandler(e)}
         />
-        <div onClick={handleDetail}>
-          <Card.Img
-            variant="top"
+      </label>
+      <Box
+        maxW="19rem"
+        bg="white"
+        h="22.5rem"
+        key={item.id}
+        shadow="2xl"
+        className="card-list"
+        onClick={handleDetail}
+      >
+        <Box>
+          <Image
             src={path + item.picture}
-            style={{
-              objectFit: "cover",
-              width: "16rem",
-              height: "20rem",
-              borderRadius: "10px",
-            }}
+            w="100%"
+            h="10rem"
+            alt={item.title}
+            objectFit="cover"
+            borderRadius={7}
           />
-          <Card.Body>
-            <p className="color-dominant m-0">
-              <strong>{item.title}</strong>
-            </p>
-            <Card.Text style={{ color: "#974A4A" }}>
-              {item.description.substring(0, 50)}
-            </Card.Text>
-          </Card.Body>
-        </div>
-      </Card>
-      <LoginModal
-        show={showLogin}
-        hide={() => setShowLogin(false)}
-        dispatch={dispatch}
-      />
-    </div>
+          <Stack p={4} spacing={false}>
+            <Heading as="h3" size="sm" isTruncated>
+              {title}
+            </Heading>
+            <Text fontSize="xs" color="gray.400" mt={1} isTruncated>
+              {created}, {item.User.fullName}
+            </Text>
+            <Text fontSize="sm" color="#6C6C6C" mt={2} noOfLines={[6]}>
+              {desc}
+            </Text>
+          </Stack>
+        </Box>
+      </Box>
+    </Box>
   );
 };
 

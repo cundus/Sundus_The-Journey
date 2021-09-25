@@ -1,9 +1,10 @@
 .cursor-pointer:hover {
   cursor: pointer;
 }
+/* MODAL DECORATION */
 
 .leaf-img {
-  position: absolute;
+  width: 80px;
   position: absolute;
   right: 0;
   top: 0;
@@ -11,9 +12,59 @@
 }
 
 .atlas-img {
-  position: absolute;
+  width: 50px;
   position: absolute;
   left: 0;
   top: 0;
   border-radius: 7px 0 0 0;
+}
+
+/* CARD STYLING */
+
+.card-list {
+  border-radius: 7px;
+  transition: 0.3s;
+  position: relative;
+}
+
+.card-list:hover {
+  transform: scale(1.03);
+  cursor: pointer;
+}
+
+input[type="checkbox"] {
+  display: none;
+}
+.label-bookmark {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  z-index: 1;
+}
+
+/* DROPDOWN STYLE */
+.avatar {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.dropdown-menu {
+  margin-left: -6em !important;
+  margin-top: 1em !important;
+  border: none;
+  filter: drop-shadow(0 0 6px grey);
+}
+
+.dropdown-menu::before {
+  z-index: -1;
+  content: url("./assets/Polygon.svg");
+  position: absolute;
+  top: -1em;
+  left: 6.5em;
+}
+
+.dropdown-toggle::after {
+  display: none;
 }

@@ -59,7 +59,7 @@ export const Jumbotron = () => {
         <Heading as="h1" size="2xl" color="white">
           you never dreamed of.
         </Heading>
-        <Text color="white" mt={5} fontSize="17">
+        <Text color="white" mt={5} fontSize="17" noOfColumn={[3, null, 2]}>
           We made a tool so you can easily keep & share your travel memories.
           But there is a lot more
         </Text>

@@ -80,6 +80,11 @@ exports.getBookmarkByUserId = async (req, res) => {
         attributes: {
           exclude: ["createdAt", "updatedAt", "userId"],
         },
+        include: {
+          model: User,
+          as: "User",
+          attributes: ["fullName", "id"],
+        },
       },
       attributes: ["id"],
     });

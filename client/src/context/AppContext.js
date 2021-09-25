@@ -4,7 +4,7 @@ export const AppContext = createContext();
 
 const initialState = {
   isLogin: false,
-  cart: [],
+  bookmarks: [],
   user: null,
   token: localStorage.getItem("token"),
   update: false,
@@ -39,6 +39,28 @@ const UserReducer = (state, action) => {
       return {
         ...state,
         update: !state.update,
+      };
+    case "GET_BOOKMARK":
+      const bookmark = action.payload;
+      const postId = bookmark.map((item) => item.Journey.id);
+      return {
+        ...state,
+        bookmarks: postId,
+      };
+    case "ADD_BOOKMARK":
+      return {
+        ...state,
+        bookmarks: [...state.bookmarks, action.payload],
+      };
+    case "DELETE_BOOKMARK":
+      return {
+        ...state,
+        bookmarks: state.bookmarks.filter((item) => item !== action.payload),
+      };
+    case "CLEAR_BOOKMARK":
+      return {
+        ...state,
+        bookmarks: [],
       };
 
     default:

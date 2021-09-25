@@ -16,23 +16,9 @@ import Profile from "./pages/Profile";
 import NewPost from "./pages/NewPost";
 import Bookmark from "./pages/Bookmark";
 
-// Theming with Chakra
-
-const colors = {
-  transparent: "transparent",
-  black: "#000",
-  white: "#fff",
-  gray: {
-    50: "#F7FAFC",
-    100: "#EDF2F7",
-  },
-};
-
-const theme = extendTheme({ colors });
-
 function App({ component }) {
   const { state, dispatch } = useContext(AppContext);
-
+  console.log("ini state context", state);
   const checkUser = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -40,11 +26,17 @@ function App({ component }) {
         return null;
       }
       setAuthToken(token);
+
       const getProfile = await API.get("/profile");
-      // console.log(getProfile);
       dispatch({
         type: "AUTH_SUCCESS",
         payload: { ...getProfile.data.data },
+      });
+
+      const getBookmarks = await API.get("/profile/bookmarks");
+      dispatch({
+        type: "GET_BOOKMARK",
+        payload: getBookmarks.data.data,
       });
     } catch (error) {
       // console.log(error);
@@ -54,10 +46,10 @@ function App({ component }) {
   useEffect(() => {
     document.body.style.backgroundColor = "#E5E5E5";
     checkUser();
-  }, [state.update]);
+  }, []);
 
   return (
-    <ChakraProvider theme={theme}>
+    <ChakraProvider>
       <Router>
         <Switch>
           <Route exact path="/" component={Home} />
