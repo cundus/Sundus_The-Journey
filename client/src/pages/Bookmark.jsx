@@ -38,15 +38,34 @@ const Bookmark = () => {
           Bookmark
         </Heading>
 
-        <Box>
-          <Center mt={20}>
-            <SimpleGrid columns={4} spacingX="40px" spacingY="40px">
-              {post?.map((item) => (
-                <CardList item={item.Journey} />
-              ))}
-            </SimpleGrid>
-          </Center>
-        </Box>
+        <Center mt={20}>
+          <SimpleGrid
+            // minChildWidth="9rem"
+            columns={[1, 2, 4]}
+            spacingX="40px"
+            spacingY="40px"
+          >
+            {post.map((item) => {
+              let isBookmark = false;
+              state.bookmarks.length > 0
+                ? state.bookmarks.map((id) => {
+                    if (item.Journey.id !== id) {
+                      return isBookmark;
+                    } else if (item.Journey.id === id) {
+                      isBookmark = true;
+                    }
+                  })
+                : (isBookmark = false);
+              return (
+                <CardList
+                  item={item.Journey}
+                  isBookmark={isBookmark}
+                  isOwner={false}
+                />
+              );
+            })}
+          </SimpleGrid>
+        </Center>
       </Container>
     </div>
   );

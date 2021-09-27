@@ -38,7 +38,7 @@ const Header = () => {
 const AfterLogin = ({ state, dispatch }) => {
   const history = useHistory();
   const [photo, setPhoto] = useState("");
-  const path = "http://localhost:4000/uploads/picture/";
+  const path = "http://localhost:4000/uploads/";
 
   const handleSignout = (e) => {
     dispatch({
@@ -55,10 +55,7 @@ const AfterLogin = ({ state, dispatch }) => {
   const fetchPhoto = async () => {
     try {
       const res = await API.get("/profile");
-      // console.log(res);
-      setPhoto(
-        res.data.data.picture !== null ? path + res.data.data.picture : null
-      );
+      setPhoto(res.data.data.picture);
     } catch (error) {
       console.log(error);
     }
@@ -75,7 +72,7 @@ const AfterLogin = ({ state, dispatch }) => {
           <Dropdown.Toggle id="dropdown-autoclose-true" as={Nav.Link}>
             <img
               className="avatar"
-              src={photo ? photo : AvatarPlaceholder}
+              src={photo ? path + photo : AvatarPlaceholder}
               alt="..."
             />
           </Dropdown.Toggle>

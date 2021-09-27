@@ -57,6 +57,7 @@ function App({ component }) {
           <Route exact path="/bookmark" component={Bookmark} />
           <Route exact path="/newjourney" component={NewPost} />
           <Route exact path="/post/:id" component={DetailPost} />
+          <Route exact path="/edit/:id" component={NewPost} />
         </Switch>
       </Router>
     </ChakraProvider>

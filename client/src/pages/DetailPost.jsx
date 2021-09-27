@@ -29,7 +29,6 @@ const DetailPost = () => {
 
       setData(post.data.data);
       setLoading(false);
-      // console.log(product, topping);
     } catch (error) {
       console.log(error);
       alert("Error, cannot get data!");

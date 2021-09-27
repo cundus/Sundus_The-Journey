@@ -1,11 +1,18 @@
-import React, { useState } from "react";
-import { useHistory } from "react-router";
+import React, { useEffect, useState } from "react";
+import { useHistory, useParams } from "react-router";
 import Header from "../components/navbar/Header";
 import { API } from "../config/api";
 
-import { EditorState, convertToRaw, stateToHtml } from "draft-js";
+import {
+  EditorState,
+  convertToRaw,
+  convertFromRaw,
+  ContentState,
+  convertFromHTML,
+} from "draft-js";
 import { Editor } from "react-draft-wysiwyg";
 import draftToHtml from "draftjs-to-html";
+import htmlToDraft from "html-to-draftjs";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 
 import { Box, Flex, Heading, Stack } from "@chakra-ui/layout";
@@ -15,15 +22,49 @@ import { Button } from "@chakra-ui/button";
 import { AttachmentIcon } from "@chakra-ui/icons";
 
 const NewPost = () => {
-  const [title, setTitle] = useState("");
   const [description, setDescription] = useState(EditorState.createEmpty());
+  const [title, setTitle] = useState("");
+  const [isEdit, setIsEdit] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [editData, setEditData] = useState({
+    title: "",
+    description: EditorState.createEmpty(),
+  });
   const [photo, setPhoto] = useState(null);
   const history = useHistory();
+  const { id } = useParams();
+  console.log(editData);
+
   const rawContentState = draftToHtml(
     convertToRaw(description.getCurrentContent())
   );
 
-  console.log(rawContentState);
+  const handleChangeEdit = (e) => {
+    setEditData({ ...editData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmitEdit = async (e) => {
+    try {
+      e.preventDefault();
+
+      const data = new FormData();
+      data.append("title", editData.title);
+      data.append("description", rawContentState);
+      if (photo !== null) {
+        data.append("picture", photo);
+      }
+
+      const config = {
+        headers: {
+          "Content-type": "multipart/form-data",
+        },
+      };
+      await API.patch(`/post/${id}`, data, config);
+      history.push("/");
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleSubmit = async (e) => {
     try {
@@ -45,6 +86,38 @@ const NewPost = () => {
       console.log(error);
     }
   };
+
+  function rawToDraft(desc) {
+    const blocksFromHTML = convertFromHTML(desc);
+    const stateDesc = ContentState.createFromBlockArray(
+      blocksFromHTML.contentBlocks,
+      blocksFromHTML.entityMap
+    );
+    return stateDesc;
+  }
+
+  const getDetailPost = async () => {
+    try {
+      setLoading(true);
+      const post = await API.get(`/post/${id}`);
+      // console.log(post.data.data);
+      setEditData(post.data.data);
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+      alert("Error, cannot get data!");
+    }
+  };
+
+  useEffect(() => {
+    const pathUrl = window.location.pathname;
+    if (pathUrl === "/newjourney") {
+      setIsEdit(false);
+    } else {
+      setIsEdit(true);
+      getDetailPost();
+    }
+  }, []);
 
   return (
     <>
@@ -69,6 +142,7 @@ const NewPost = () => {
                     backgroundColor: "white",
                     color: "black",
                   }}
+                  value={isEdit ? editData.title : title}
                 />
               </FormControl>
 
@@ -101,7 +175,7 @@ const NewPost = () => {
               </Flex>
 
               <Editor
-                editorState={description}
+                editorState={isEdit ? editData.description : description}
                 wrapperClassName="wrapper-class"
                 editorClassName="editor-class"
                 toolbarClassName="toolbar-class"
