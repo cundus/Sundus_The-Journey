@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   Modal,
   ModalBody,
@@ -26,7 +26,9 @@ const RegisterModal = (props) => {
     phone: "",
     address: "",
   });
-  // console.log(data);
+
+  const doneRef = useRef(null);
+  const executeScroll = () => doneRef.current.scrollIntoView();
 
   const [success, setSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -34,11 +36,15 @@ const RegisterModal = (props) => {
   const [messageOk, setMessageOk] = useState("");
 
   const handleChange = (e) => {
+    setIsError(false);
+    setMessageOk("");
     setData({ ...data, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    executeScroll();
+
     try {
       setIsError(false);
       const config = {
@@ -77,22 +83,26 @@ const RegisterModal = (props) => {
       >
         <ModalOverlay />
         <ModalContent h={500}>
-          <ModalHeader
-            textAlign="center"
-            my={5}
-            fontSize={26}
-            className="login-modal"
-          >
+          <ModalHeader className="login-modal">
             <img src={Atlas} alt="" className="atlas-img" />
             <img src={Leaf} alt="" className="leaf-img" />
-            Register
           </ModalHeader>
           <ModalBody>
             <form className="px-2" onSubmit={handleSubmit}>
-              {isError && <ErrorMessage status="error" message={message} />}
-              {messageOk && (
-                <ErrorMessage status="success" message={messageOk} />
-              )}
+              <div ref={doneRef}>
+                <Text
+                  textAlign="center"
+                  mb={10}
+                  fontSize={26}
+                  fontWeight="bold"
+                >
+                  Register
+                </Text>
+                {isError && <ErrorMessage status="error" message={message} />}
+                {messageOk && (
+                  <ErrorMessage status="success" message={messageOk} />
+                )}
+              </div>
 
               <FormControl id="fullname" isRequired my={5}>
                 <FormLabel fontWeight="bold">Full Name</FormLabel>
@@ -102,6 +112,7 @@ const RegisterModal = (props) => {
                   name="fullName"
                   required
                   variant="filled"
+                  value={data.fullName}
                 />
               </FormControl>
               <FormControl id="email" isRequired my={5}>
@@ -111,6 +122,7 @@ const RegisterModal = (props) => {
                   variant="filled"
                   onChange={handleChange}
                   required
+                  value={data.email}
                   name="email"
                 />
               </FormControl>
@@ -120,6 +132,7 @@ const RegisterModal = (props) => {
                   type="password"
                   variant="filled"
                   required
+                  value={data.password}
                   name="password"
                   onChange={handleChange}
                 />
@@ -127,7 +140,7 @@ const RegisterModal = (props) => {
               <FormControl id="phone" isRequired my={5}>
                 <FormLabel fontWeight="bold">Phone</FormLabel>
                 <Input
-                  type="text"
+                  value={data.phone}
                   onChange={handleChange}
                   name="phone"
                   required
@@ -138,6 +151,7 @@ const RegisterModal = (props) => {
                 <FormLabel fontWeight="bold">Address</FormLabel>
                 <Textarea
                   onChange={handleChange}
+                  value={data.address}
                   name="address"
                   required
                   variant="filled"

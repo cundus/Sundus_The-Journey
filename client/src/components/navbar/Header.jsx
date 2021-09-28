@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { Container, Dropdown, Nav, Navbar, NavDropdown } from "react-bootstrap";
 import LoginModal from "../modal/LoginModal";
 import { useHistory } from "react-router";

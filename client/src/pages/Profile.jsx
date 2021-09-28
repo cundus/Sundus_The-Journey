@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { API } from "../config/api";
 import PhotoPlaceholder from "../assets/profile.png";
 import Header from "../components/navbar/Header";
@@ -6,6 +6,7 @@ import CardList from "../components/cardlist/CardList";
 import {
   Box,
   Center,
+  Flex,
   Heading,
   SimpleGrid,
   Stack,
@@ -20,6 +21,8 @@ import { IoCamera } from "react-icons/io5";
 import { EditIcon } from "@chakra-ui/icons";
 import { Input } from "@chakra-ui/input";
 import { Button } from "@chakra-ui/button";
+import { Spinner } from "@chakra-ui/spinner";
+import { useHistory } from "react-router";
 
 const Profile = () => {
   const { state, dispatch } = useContext(AppContext);
@@ -30,7 +33,10 @@ const Profile = () => {
   const [loading, setLoading] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const doneRef = useRef(null);
+  const executeScroll = () => doneRef.current.scrollIntoView();
 
+  const history = useHistory();
   const path = "http://localhost:4000/uploads/";
 
   const profilePic = profile.picture
@@ -43,7 +49,6 @@ const Profile = () => {
       const resProfile = await API.get("/profile");
       const resPost = await API.get("/profile/posts");
 
-      // console.log("get Product", resPost, resProfile);
       setProfile(resProfile.data.data);
       setPost(resPost.data.data);
       setName({ fullName: resProfile.data.data.fullName });
@@ -82,11 +87,26 @@ const Profile = () => {
 
   useEffect(() => {
     getData();
+    executeScroll();
   }, [state.update]);
+
+  loading && (
+    <Flex justify="center" mt={30}>
+      <Spinner
+        thickness="4px"
+        speed="0.65s"
+        emptyColor="gray.200"
+        color="blue.500"
+        size="xl"
+      />
+    </Flex>
+  );
 
   return (
     <>
-      <Header />
+      <Box ref={doneRef}>
+        <Header />
+      </Box>
       <Box mt={16} px={16} h="100vh">
         <Heading as="h1" size="xl">
           Profile
@@ -99,7 +119,7 @@ const Profile = () => {
                 <>
                   <Image
                     borderRadius="full"
-                    boxSize="170px"
+                    boxSize="200px"
                     objectFit="cover"
                     src={preview ? URL.createObjectURL(preview) : profilePic}
                     alt={profile.fullName}
@@ -159,7 +179,7 @@ const Profile = () => {
                 <>
                   <Image
                     borderRadius="full"
-                    boxSize="170px"
+                    boxSize="200px"
                     objectFit="cover"
                     src={profilePic}
                     alt={profile.fullName}
@@ -186,23 +206,45 @@ const Profile = () => {
           </Stack>
         </Center>
         <Center mt={20}>
-          <SimpleGrid columns={4} spacing={10}>
-            {post.map((item) => {
-              let isBookmark = false;
-              state.bookmarks.length > 0
-                ? state.bookmarks.map((id) => {
-                    if (item.id !== id) {
-                      return isBookmark;
-                    } else if (item.id === id) {
-                      isBookmark = true;
-                    }
-                  })
-                : (isBookmark = false);
-              return (
-                <CardList item={item} isBookmark={isBookmark} isOwner={true} />
-              );
-            })}
-          </SimpleGrid>
+          {post.length > 0 ? (
+            <SimpleGrid columns={[1, 3, 4]} spacing={10}>
+              {post.map((item) => {
+                let isBookmark = false;
+                state.bookmarks.length > 0
+                  ? state.bookmarks.map((id) => {
+                      if (item.id !== id) {
+                        return isBookmark;
+                      } else if (item.id === id) {
+                        isBookmark = true;
+                      }
+                    })
+                  : (isBookmark = false);
+                return (
+                  <CardList
+                    item={item}
+                    isBookmark={isBookmark}
+                    isOwner={true}
+                  />
+                );
+              })}
+            </SimpleGrid>
+          ) : (
+            <Box display="block">
+              <Text fontSize="xl">
+                Looks like you haven't made any Journeys yet, want to make one
+                now?
+              </Text>
+              <Text
+                fontSize="xl"
+                textAlign="center"
+                color="twitter.400"
+                onClick={() => history.push("/newjourney")}
+                _hover={{ cursor: "pointer" }}
+              >
+                Let's Go!
+              </Text>
+            </Box>
+          )}
         </Center>
       </Box>
       <EditProfile isOpen={isOpen} onClose={onClose} profile={profile} />

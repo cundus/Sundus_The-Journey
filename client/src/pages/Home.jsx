@@ -4,23 +4,15 @@ import { AppContext } from "../context/AppContext";
 import { API } from "../config/api";
 import CardList from "../components/cardlist/CardList";
 import Header from "../components/navbar/Header";
-import { Box, Center, Heading, SimpleGrid } from "@chakra-ui/layout";
+import { Box, Center, Flex, Heading, SimpleGrid } from "@chakra-ui/layout";
 import { Input } from "@chakra-ui/input";
 import { Button } from "@chakra-ui/button";
-import { fadeIn } from "react-animations";
-import styled, { keyframes } from "styled-components";
 import Fade from "react-reveal/Fade";
-import PacmanLoader from "react-spinners";
 import { Spinner } from "@chakra-ui/spinner";
 
 function Home() {
   const { state } = useContext(AppContext);
   const [isLoading, setIsLoading] = useState(false);
-
-  // Animations
-  const FadeIn = styled.div`
-    animation: 2s ${keyframes`${fadeIn}`};
-  `;
 
   // async state
   const [data, setData] = useState([]);
@@ -43,7 +35,7 @@ function Home() {
 
   useEffect(() => {
     getPost();
-  }, [state.update]);
+  }, []);
 
   function search(items) {
     return items.filter((item) => {
@@ -60,75 +52,87 @@ function Home() {
   return (
     <div>
       {!state.isLogin ? (
-        <Fade>
+        <Fade top>
           <Jumbotron />
         </Fade>
       ) : (
         <Header />
       )}
       {isLoading ? (
-        <Spinner />
+        <Flex justify="center" mt={30}>
+          <Spinner
+            thickness="4px"
+            speed="0.65s"
+            emptyColor="gray.200"
+            color="blue.500"
+            size="xl"
+          />
+        </Flex>
       ) : (
         <Box className="" mt={16} px={16}>
-          <Heading as="h1" size="xl" isTruncated>
-            Journey
-          </Heading>
+          <Fade>
+            <Heading as="h1" size="xl" isTruncated>
+              Journey
+            </Heading>
 
-          <Box
-            className="search-box"
-            display="flex"
-            maxW="5xl"
-            m="auto"
-            mb={10}
-            mt={6}
-          >
-            <Input
-              type="text"
-              placeholder="Find journey"
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              variant="filled"
-              style={{ borderRadius: "7px 0 0 7px" }}
-            />
-
-            <Button
-              variant="solid"
-              colorScheme="twitter"
-              w="40"
-              style={{ borderRadius: "0 7px  7px 0" }}
+            <Box
+              className="search-box"
+              display="flex"
+              maxW="5xl"
+              m="auto"
+              mb={10}
+              mt={6}
             >
-              Search
-            </Button>
-          </Box>
+              <Input
+                type="text"
+                placeholder="Find journey"
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                variant="filled"
+                style={{ borderRadius: "7px 0 0 7px" }}
+              />
 
-          <Center mt={20}>
-            <SimpleGrid
-              // minChildWidth="9rem"
-              columns={[1, 2, 4]}
-              spacingX="40px"
-              spacingY="40px"
-            >
-              {search(data).map((item) => {
-                let isBookmark = false;
-                state.bookmarks.length > 0
-                  ? state.bookmarks.map((id) => {
-                      if (item.id !== id) {
-                        return isBookmark;
-                      } else if (item.id === id) {
-                        isBookmark = true;
-                      }
-                    })
-                  : (isBookmark = false);
-                return (
-                  <CardList
-                    item={item}
-                    isBookmark={isBookmark}
-                    isOwner={false}
-                  />
-                );
-              })}
-            </SimpleGrid>
-          </Center>
+              <Button
+                variant="solid"
+                colorScheme="twitter"
+                w="40"
+                style={{ borderRadius: "0 7px  7px 0" }}
+              >
+                Search
+              </Button>
+            </Box>
+          </Fade>
+
+          <Fade bottom>
+            <Center mt={20}>
+              <SimpleGrid
+                // minChildWidth="9rem"
+                columns={[1, 2, 4]}
+                spacingX="40px"
+                spacingY="40px"
+              >
+                {search(data).map((item) => {
+                  let isBookmark = false;
+                  state.bookmarks.length > 0
+                    ? state.bookmarks.map((id) => {
+                        if (item.id !== id) {
+                          return isBookmark;
+                        } else if (item.id === id) {
+                          isBookmark = true;
+                        }
+                      })
+                    : (isBookmark = false);
+                  return (
+                    <CardList
+                      item={item}
+                      isBookmark={isBookmark}
+                      isOwner={false}
+                    />
+                  );
+                })}
+              </SimpleGrid>
+            </Center>
+          </Fade>
         </Box>
       )}
     </div>

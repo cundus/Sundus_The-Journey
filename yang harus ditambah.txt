@@ -1,0 +1,3 @@
+1. klik d modal login register
+2. toast notification setelah hapus dan add bookmark
+3. private route

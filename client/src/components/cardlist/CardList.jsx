@@ -1,15 +1,6 @@
 import { Image } from "@chakra-ui/image";
-import {
-  Box,
-  Flex,
-  Heading,
-  Stack,
-  Text,
-  Circle,
-  HStack,
-  VStack,
-} from "@chakra-ui/layout";
-import { useContext, useEffect, useState } from "react";
+import { Box, Heading, Stack, Text, Circle, HStack } from "@chakra-ui/layout";
+import { useContext } from "react";
 import { useHistory } from "react-router-dom";
 import { API } from "../../config/api";
 import { AppContext } from "../../context/AppContext";
@@ -22,12 +13,22 @@ import { AiFillDelete, AiFillEdit } from "react-icons/ai";
 import { TiInfoLarge } from "react-icons/ti";
 import { useDisclosure } from "@chakra-ui/hooks";
 import ConfirmationModal from "../modal/ConfirmationModal";
+import { useToast } from "@chakra-ui/toast";
 
 const CardList = ({ item, isBookmark, isOwner }) => {
   // console.log(item);
   const { state, dispatch } = useContext(AppContext);
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
+  const {
+    isOpen: isDeleteOpen,
+    onOpen: onDeleteOpen,
+    onClose: onDeleteClose,
+  } = useDisclosure();
+  const {
+    isOpen: isLoginOpen,
+    onOpen: onLoginOpen,
+    onClose: onLoginClose,
+  } = useDisclosure();
+  const toast = useToast();
   const history = useHistory();
   const path = "http://localhost:4000/uploads/";
   const created = moment(item.createdAt).format("D MMMM YYYY");
@@ -43,7 +44,13 @@ const CardList = ({ item, isBookmark, isOwner }) => {
   const addToBookmark = async () => {
     try {
       const response = await API.post(`/bookmark/${id}`);
-      console.log("added");
+      toast({
+        title: `Added To Bookmark`,
+        status: "success",
+        isClosable: true,
+        position: "top",
+        variant: "left-accent",
+      });
       dispatch({
         type: "ADD_BOOKMARK",
         payload: id,
@@ -59,7 +66,13 @@ const CardList = ({ item, isBookmark, isOwner }) => {
   const deleteBookmark = async () => {
     try {
       const response = await API.delete(`/bookmark/${id}`);
-
+      toast({
+        title: `Deleted From Bookmark`,
+        status: "info",
+        position: "top",
+        isClosable: true,
+        variant: "left-accent",
+      });
       console.log("deleted");
       dispatch({
         type: "DELETE_BOOKMARK",
@@ -78,7 +91,7 @@ const CardList = ({ item, isBookmark, isOwner }) => {
     if (state.isLogin === true) {
       isBookmark ? deleteBookmark() : addToBookmark();
     } else {
-      return alert("login dulu bang");
+      onLoginOpen();
     }
   };
 
@@ -88,7 +101,7 @@ const CardList = ({ item, isBookmark, isOwner }) => {
       if (state.isLogin) {
         history.push(`post/${item.id}`);
       } else {
-        return alert("login dulu bang");
+        onLoginOpen();
       }
     } else {
       return;
@@ -161,7 +174,7 @@ const CardList = ({ item, isBookmark, isOwner }) => {
                     <Icon as={AiFillEdit} />
                   </Button>
                   <Button
-                    onClick={onOpen}
+                    onClick={onDeleteOpen}
                     color="white"
                     bg="red.400"
                     variant="filled"
@@ -185,7 +198,16 @@ const CardList = ({ item, isBookmark, isOwner }) => {
           </Stack>
         </Box>
       </Box>
-      <ConfirmationModal isOpen={isOpen} onClose={onClose} id={id} />
+      <ConfirmationModal
+        isOpen={isDeleteOpen}
+        onClose={onDeleteClose}
+        id={id}
+      />
+      <LoginModal
+        isOpen={isLoginOpen}
+        onClose={onLoginClose}
+        dispatch={dispatch}
+      />
     </Box>
   );
 };
