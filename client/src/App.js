@@ -15,6 +15,7 @@ import { API, setAuthToken } from "./config/api";
 import Profile from "./pages/Profile";
 import NewPost from "./pages/NewPost";
 import Bookmark from "./pages/Bookmark";
+import PrivateRoute from "./components/route/PrivateRoute";
 
 function App({ component }) {
   const { state, dispatch } = useContext(AppContext);
@@ -53,11 +54,11 @@ function App({ component }) {
       <Router>
         <Switch>
           <Route exact path="/" component={Home} />
-          <Route exact path="/profile" component={Profile} />
-          <Route exact path="/bookmark" component={Bookmark} />
-          <Route exact path="/newjourney" component={NewPost} />
-          <Route exact path="/post/:id" component={DetailPost} />
-          <Route exact path="/edit/:id" component={NewPost} />
+          <PrivateRoute exact path="/profile" component={Profile} />
+          <PrivateRoute exact path="/bookmark" component={Bookmark} />
+          <PrivateRoute exact path="/newjourney" component={NewPost} />
+          <PrivateRoute exact path="/post/:id" component={DetailPost} />
+          <PrivateRoute exact path="/edit/:id" component={NewPost} />
         </Switch>
       </Router>
     </ChakraProvider>

@@ -18,7 +18,7 @@ import { Textarea } from "@chakra-ui/textarea";
 import ErrorMessage from "../atom/ErrorMessage";
 
 const RegisterModal = (props) => {
-  const { dispatch, isOpen, onClose } = props;
+  const { dispatch, isOpen, onClose, login } = props;
   const [data, setData] = useState({
     fullName: "",
     email: "",
@@ -169,7 +169,7 @@ const RegisterModal = (props) => {
             </form>
 
             <Text color="gray.500" textAlign="center" mb={5}>
-              Don't have an account? Klik <b>Here</b>
+              Don't have an account? Klik <b onClick={login}>Here</b>
             </Text>
           </ModalBody>
         </ModalContent>

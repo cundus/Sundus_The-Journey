@@ -18,7 +18,7 @@ import Atlas from "../../assets/atlas 1.svg";
 import Leaf from "../../assets/leaf 1.svg";
 
 const LoginModal = (props) => {
-  const { dispatch, isOpen, onClose } = props;
+  const { dispatch, isOpen, onClose, register } = props;
   const history = useHistory();
   const [isError, setIsError] = useState(false);
   const [message, setMessage] = useState("");
@@ -58,7 +58,7 @@ const LoginModal = (props) => {
       dispatch({
         type: "UPDATE",
       });
-
+      onClose();
       history.push("/");
     } catch (error) {
       const { response } = error;
@@ -113,7 +113,7 @@ const LoginModal = (props) => {
           </form>
 
           <Text color="gray.500" textAlign="center" mb={5}>
-            Don't have an account? Klik <b>Here</b>
+            Don't have an account? Klik <b onClick={register}>Here</b>
           </Text>
         </ModalContent>
       </Modal>

@@ -5,10 +5,18 @@ import { API } from "../config/api";
 import CardList from "../components/cardlist/CardList";
 import Header from "../components/navbar/Header";
 import { Box, Center, Flex, Heading, SimpleGrid } from "@chakra-ui/layout";
-import { Input } from "@chakra-ui/input";
+import {
+  Input,
+  InputGroup,
+  InputLeftElement,
+  InputRightElement,
+} from "@chakra-ui/input";
 import { Button } from "@chakra-ui/button";
 import Fade from "react-reveal/Fade";
 import { Spinner } from "@chakra-ui/spinner";
+import { CircularProgress } from "@chakra-ui/progress";
+import { CloseIcon, SearchIcon } from "@chakra-ui/icons";
+import { ScaleFade } from "@chakra-ui/transition";
 
 function Home() {
   const { state } = useContext(AppContext);
@@ -60,12 +68,11 @@ function Home() {
       )}
       {isLoading ? (
         <Flex justify="center" mt={30}>
-          <Spinner
-            thickness="4px"
-            speed="0.65s"
-            emptyColor="gray.200"
-            color="blue.500"
-            size="xl"
+          <CircularProgress
+            isIndeterminate
+            size="100px"
+            color="twitter.400"
+            thickness="5px"
           />
         </Flex>
       ) : (
@@ -83,23 +90,23 @@ function Home() {
               mb={10}
               mt={6}
             >
-              <Input
-                type="text"
-                placeholder="Find journey"
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                variant="filled"
-                style={{ borderRadius: "7px 0 0 7px" }}
-              />
-
-              <Button
-                variant="solid"
-                colorScheme="twitter"
-                w="40"
-                style={{ borderRadius: "0 7px  7px 0" }}
-              >
-                Search
-              </Button>
+              <InputGroup size="md">
+                <InputLeftElement>
+                  <SearchIcon />
+                </InputLeftElement>
+                <Input
+                  type="text"
+                  placeholder="Find journey"
+                  value={q}
+                  onChange={(e) => setQ(e.target.value)}
+                  variant="filled"
+                />
+                <ScaleFade initialScale={0.9} in={q.length > 0} reverse>
+                  <InputRightElement>
+                    <CloseIcon onClick={() => setQ("")} />
+                  </InputRightElement>
+                </ScaleFade>
+              </InputGroup>
             </Box>
           </Fade>
 

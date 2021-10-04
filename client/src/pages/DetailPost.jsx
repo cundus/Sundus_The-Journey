@@ -8,6 +8,7 @@ import { AppContext } from "../context/AppContext";
 import Header from "../components/navbar/Header";
 import { Box, Container, Flex, Heading, Text } from "@chakra-ui/layout";
 import { Img } from "@chakra-ui/image";
+import draftToHtml from "draftjs-to-html";
 
 const DetailPost = () => {
   const { state, dispatch } = useContext(AppContext);
@@ -27,7 +28,10 @@ const DetailPost = () => {
       setLoading(true);
       const post = await API.get(`/post/${id}`);
 
-      setData(post.data.data);
+      setData({
+        ...post.data.data,
+        description: draftToHtml(JSON.parse(post.data.data.description)),
+      });
       setLoading(false);
     } catch (error) {
       console.log(error);

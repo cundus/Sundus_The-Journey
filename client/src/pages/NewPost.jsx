@@ -12,7 +12,6 @@ import {
 } from "draft-js";
 import { Editor } from "react-draft-wysiwyg";
 import draftToHtml from "draftjs-to-html";
-import htmlToDraft from "html-to-draftjs";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 
 import { Box, Flex, Heading, Stack } from "@chakra-ui/layout";
@@ -20,88 +19,88 @@ import { FormControl, FormLabel } from "@chakra-ui/form-control";
 import { Input, InputGroup, InputLeftElement } from "@chakra-ui/input";
 import { Button } from "@chakra-ui/button";
 import { AttachmentIcon } from "@chakra-ui/icons";
+import { Image } from "@chakra-ui/image";
 
 const NewPost = () => {
   const [description, setDescription] = useState(EditorState.createEmpty());
   const [title, setTitle] = useState("");
+  const [photo, setPhoto] = useState("");
+  const [preview, setPreview] = useState(null);
   const [isEdit, setIsEdit] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [editData, setEditData] = useState({
-    title: "",
-    description: EditorState.createEmpty(),
-  });
-  const [photo, setPhoto] = useState(null);
+
   const history = useHistory();
   const { id } = useParams();
-  console.log(editData);
+  const path = "http://localhost:4000/uploads/";
+  // console.log(title);
 
-  const rawContentState = draftToHtml(
-    convertToRaw(description.getCurrentContent())
-  );
+  // const handleSubmitEdit = async (e) => {
+  //   try {
+  //     e.preventDefault();
+  //     const rawContentState = convertToRaw(
+  //       editData?.description.getCurrentContent()
+  //     );
 
-  const handleChangeEdit = (e) => {
-    setEditData({ ...editData, [e.target.name]: e.target.value });
-  };
+  //     const data = new FormData();
+  //     data.append("title", title);
+  //     data.append("description", JSON.stringify(rawContentState));
+  //     if (photo !== null) {
+  //       data.append("picture", photo);
+  //     }
 
-  const handleSubmitEdit = async (e) => {
-    try {
-      e.preventDefault();
-
-      const data = new FormData();
-      data.append("title", editData.title);
-      data.append("description", rawContentState);
-      if (photo !== null) {
-        data.append("picture", photo);
-      }
-
-      const config = {
-        headers: {
-          "Content-type": "multipart/form-data",
-        },
-      };
-      await API.patch(`/post/${id}`, data, config);
-      history.push("/");
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  //     const config = {
+  //       headers: {
+  //         "Content-type": "multipart/form-data",
+  //       },
+  //     };
+  //     await API.patch(`/post/${id}`, data, config);
+  //     history.push("/");
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
+      const rawContentState = convertToRaw(description.getCurrentContent());
 
       const data = new FormData();
       data.append("title", title);
-      data.append("description", rawContentState);
-      data.append("picture", photo);
+      data.append("description", JSON.stringify(rawContentState));
 
+      if (preview !== null) {
+        data.append("picture", preview);
+      }
+      console.log(isEdit);
       const config = {
         headers: {
           "Content-type": "multipart/form-data",
         },
       };
-      await API.post("/post", data, config);
+      if (isEdit === true) {
+        await API.patch(`/post/${id}`, data, config);
+      } else {
+        await API.post("/post", data, config);
+      }
       history.push("/");
     } catch (error) {
       console.log(error);
     }
   };
-
-  function rawToDraft(desc) {
-    const blocksFromHTML = convertFromHTML(desc);
-    const stateDesc = ContentState.createFromBlockArray(
-      blocksFromHTML.contentBlocks,
-      blocksFromHTML.entityMap
-    );
-    return stateDesc;
-  }
 
   const getDetailPost = async () => {
     try {
       setLoading(true);
       const post = await API.get(`/post/${id}`);
       // console.log(post.data.data);
-      setEditData(post.data.data);
+      const postData = post.data.data;
+
+      const descriptionOld = convertFromRaw(JSON.parse(postData.description));
+      setTitle(postData.title);
+      setDescription(EditorState.createWithContent(descriptionOld));
+      setPhoto(postData.picture);
+
       setLoading(false);
     } catch (error) {
       console.log(error);
@@ -142,12 +141,29 @@ const NewPost = () => {
                     backgroundColor: "white",
                     color: "black",
                   }}
-                  value={isEdit ? editData.title : title}
+                  value={title}
+                  required
                 />
               </FormControl>
 
-              <Flex>
-                <FormControl id="upload" w={180}>
+              <Editor
+                editorState={description}
+                wrapperClassName="wrapper-class"
+                editorClassName="editor-class"
+                toolbarClassName="toolbar-class"
+                wrapperStyle={{
+                  outline: "1px solid gray",
+                  marginBottom: "20px",
+                  borderRadius: "5px",
+                  backgroundColor: "white",
+                }}
+                editorStyle={{ height: "300px", padding: "0 10px" }}
+                onEditorStateChange={(editorState) =>
+                  setDescription(editorState)
+                }
+              />
+              <Box>
+                <FormControl id="upload" w="fit-content">
                   <FormLabel
                     border="gray 1px solid"
                     bg="white"
@@ -160,7 +176,7 @@ const NewPost = () => {
                     }}
                   >
                     <AttachmentIcon color="gray.600" me="5" />
-                    Add Image
+                    {photo || preview ? "Change Image" : "Add Image"}
                   </FormLabel>
                   <Input
                     type="file"
@@ -168,29 +184,18 @@ const NewPost = () => {
                     hidden
                     name="photo"
                     onChange={(e) => {
-                      setPhoto(e.target.files[0]);
+                      setPreview(e.target.files[0]);
                     }}
                   />
                 </FormControl>
-              </Flex>
-
-              <Editor
-                editorState={isEdit ? editData.description : description}
-                wrapperClassName="wrapper-class"
-                editorClassName="editor-class"
-                toolbarClassName="toolbar-class"
-                wrapperStyle={{
-                  outline: "1px solid gray",
-                  marginBottom: "20px",
-                  borderRadius: "5px",
-                  backgroundColor: "white",
-                }}
-                editorStyle={{ height: "300px", padding: "10px" }}
-                onEditorStateChange={(editorState) =>
-                  setDescription(editorState)
-                }
-              />
-
+                {photo || preview ? (
+                  <Image
+                    src={preview ? URL.createObjectURL(preview) : path + photo}
+                    w="xl"
+                    mx="auto"
+                  />
+                ) : null}
+              </Box>
               <Flex justify="end">
                 <Button
                   variant="solid"

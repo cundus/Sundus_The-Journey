@@ -47,8 +47,9 @@ exports.getUser = async (req, res) => {
 exports.updateUser = async (req, res) => {
   try {
     const { body, idUser } = req;
-    body.picture = req.files.picture[0].filename;
-    console.log(body);
+    if (req.files.picture) {
+      body.picture = req.files.picture[0].filename;
+    }
     const userData = await User.update(body, { where: { id: idUser } });
     const user = await User.findOne({
       where: { id: idUser },

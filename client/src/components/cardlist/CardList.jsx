@@ -14,6 +14,7 @@ import { TiInfoLarge } from "react-icons/ti";
 import { useDisclosure } from "@chakra-ui/hooks";
 import ConfirmationModal from "../modal/ConfirmationModal";
 import { useToast } from "@chakra-ui/toast";
+import draftToHtml from "draftjs-to-html";
 
 const CardList = ({ item, isBookmark, isOwner }) => {
   // console.log(item);
@@ -35,11 +36,14 @@ const CardList = ({ item, isBookmark, isOwner }) => {
   // console.log(created);
 
   const id = item.id;
-  let desc =
-    item.description.replace(/(<([^>]+)>)/gi, "").substring(0, 230) + "...";
+  let desc = draftToHtml(JSON.parse(item.description));
+  desc = desc.replace(/(<([^>]+)>)/gi, "").substring(0, 230) + "...";
 
-  const title =
-    item.title.length > 30 ? item.title.substring(0, 30) + "..." : item.title;
+  const title = item.title;
+
+  // function createMarkup(e) {
+  //   return { __html: e };
+  // }
 
   const addToBookmark = async () => {
     try {

@@ -23,6 +23,7 @@ import { Input } from "@chakra-ui/input";
 import { Button } from "@chakra-ui/button";
 import { Spinner } from "@chakra-ui/spinner";
 import { useHistory } from "react-router";
+import { CircularProgress } from "@chakra-ui/progress";
 
 const Profile = () => {
   const { state, dispatch } = useContext(AppContext);
@@ -92,12 +93,11 @@ const Profile = () => {
 
   loading && (
     <Flex justify="center" mt={30}>
-      <Spinner
-        thickness="4px"
-        speed="0.65s"
-        emptyColor="gray.200"
-        color="blue.500"
-        size="xl"
+      <CircularProgress
+        isIndeterminate
+        size="100px"
+        color="twitter.400"
+        thickness="5px"
       />
     </Flex>
   );

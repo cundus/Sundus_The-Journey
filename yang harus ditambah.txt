@@ -1,3 +1,5 @@
 1. klik d modal login register
-2. toast notification setelah hapus dan add bookmark
+2. toast notification setelah hapus dan add bookmark> done
 3. private route
+4. ganti tombol search dengan icon search > done
+5. edit post

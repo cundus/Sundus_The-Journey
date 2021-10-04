@@ -70,11 +70,19 @@ export const Jumbotron = () => {
         isOpen={isLoginOpen}
         onClose={onLoginClose}
         dispatch={dispatch}
+        register={() => {
+          onLoginClose();
+          onRegisterOpen();
+        }}
       />
       <RegisterModal
         isOpen={isRegisterOpen}
         onClose={onRegisterClose}
         dispatch={dispatch}
+        login={() => {
+          onRegisterClose();
+          onLoginOpen();
+        }}
       />
     </div>
   );

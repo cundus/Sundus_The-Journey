@@ -41,7 +41,7 @@ route.get("/posts", getPosts);
 route.get("/post/:id", getPost);
 route.get("/profile/posts", auth, getPostByUserLogin);
 route.get("/posts/:userid", getPostByUser);
-route.patch("/post/:id", auth, updatePost);
+route.patch("/post/:id", auth, uploadFile("picture"), updatePost);
 route.delete("/post/:id", auth, deletePost);
 
 // Bookmark

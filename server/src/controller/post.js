@@ -148,6 +148,9 @@ exports.updatePost = async (req, res) => {
   try {
     const { body } = req;
     const id = req.params.id;
+    if (req.files.picture) {
+      body.picture = req.files.picture[0].filename;
+    }
     await Post.update(body, {
       where: { id: id },
     });
